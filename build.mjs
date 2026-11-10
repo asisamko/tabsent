@@ -66,17 +66,12 @@ const html = `<!doctype html>
   .card.demo { position: relative; overflow: hidden; color: #FAF9F5; border-color: color-mix(in srgb, var(--accent) 55%, #2B2A27); background: radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, var(--accent) 50%, transparent), transparent 58%), #2B2A27; }
   .card.demo h2 { color: #FAF9F5; font-size: 18px; }
   .card.demo p { color: #D3CDC2; }
-  .card.demo .tag { background: rgba(255,255,255,.12); color: #F3C4B2; }
   .card.demo a.btn { background: #FAF9F5; color: #2B2A27; }
   .card.demo a.btn:hover { background: #fff; }
   .card.demo a.btn.ghost { background: transparent; color: #FAF9F5; border: 1px solid rgba(255,255,255,.28); }
   .card.demo a.btn.ghost:hover { background: rgba(255,255,255,.08); }
-  .demo-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-  .live { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; color: #7FD3A2; }
-  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #4CC38A; animation: pulse 2s infinite; }
-  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(76,195,138,.55); } 70% { box-shadow: 0 0 0 7px rgba(76,195,138,0); } 100% { box-shadow: 0 0 0 0 rgba(76,195,138,0); } }
   .demo-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-  .demo-chips span { font: 600 11.5px ui-monospace, Menlo, monospace; color: #D8D2C6; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 7px; padding: 4px 8px; }
+  .demo-chips span { font: 600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #D8D2C6; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 7px; padding: 4px 8px; }
   .demo-chips b { color: #7FD3A2; }
   @media (prefers-color-scheme: dark) { .card.demo { background: radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 58%), #322E2A; } }
   .card h2 { font-size: 16px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
@@ -102,10 +97,6 @@ const html = `<!doctype html>
   <p class="lead">Stop websites from noticing that you switched to another window, tab or app. The page always thinks it is visible and focused.</p>
 
   <section class="card demo">
-    <div class="demo-top">
-      <span class="live"><span class="live-dot"></span>LIVE DEMO</span>
-      <span class="tag">see it work</span>
-    </div>
     <h2>A page that watches your focus</h2>
     <p>Switch away and it notices — then turn the bypass on and it stops. Live counter, timer and event log.</p>
     <div class="demo-chips">
