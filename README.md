@@ -8,6 +8,9 @@ existing userscript installs keep updating.
 
 **Quickest start:** open [`index.html`](index.html) (double-click the file) and follow the steps there.
 
+**Hosted version:** <https://window-focus-bypass-web.vercel.app> — the same install page plus the
+[live demo](https://window-focus-bypass-web.vercel.app/demo).
+
 **See it work:** open [`demo.html`](demo.html) — a page that watches whether the window is focused.
 Switch away and it notices; click **Activate TabSent** and it stops noticing.
 
