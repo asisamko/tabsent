@@ -8,8 +8,8 @@ existing userscript installs keep updating.
 
 **Quickest start:** open [`index.html`](index.html) (double-click the file) and follow the steps there.
 
-**Hosted version:** <https://window-focus-bypass-web.vercel.app> — the same install page plus the
-[live demo](https://window-focus-bypass-web.vercel.app/demo).
+**Hosted version:** <https://tabsent.oryks.org> — the same install page plus the
+[live demo](https://tabsent.oryks.org/demo).
 
 **See it work:** open [`demo.html`](demo.html) — a page that watches whether the window is focused.
 Switch away and it notices; click **Activate TabSent** and it stops noticing.
@@ -47,15 +47,18 @@ To limit it to certain sites, edit the `@match` line in Tampermonkey
 
 Chrome then asks for access to that one site only. The extension asks for no site access at install
 time. Turning on **All sites** asks for access to every website. Once it is on, the extension
-starts working in the open tab right away. Reload the page once (there is a button in the popup)
-so it also runs before the page's own scripts. Tabs where it is on show an orange **ON** badge.
-Remove sites from the list in the popup.
+reloads the page automatically (save any unsaved work first) so the guard also runs before the
+page's own scripts. Tabs where it is on show an orange **ON** badge. Remove sites from the list in
+the popup.
 
 ### 4. Console – no install
 
-1. On the page, open the console: <kbd>⌥</kbd><kbd>⌘</kbd><kbd>J</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>J</kbd> (Windows).
-2. Paste the content of `focus-bypass.user.js` (or copy it with the button in `index.html`) and press <kbd>Enter</kbd>.
-   Chrome may first ask you to type `allow pasting`.
+1. On the page you want to protect, open the console:
+   <kbd>⌥</kbd><kbd>⌘</kbd><kbd>J</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>J</kbd> (Windows).
+2. Click **Copy script** on `index.html` (or copy the content of `focus-bypass.user.js`), paste it
+   into the console and press <kbd>Enter</kbd>. Chrome may first ask you to type `allow pasting`.
+3. It works right away, but lasts only until you reload the page. For automatic protection, use the
+   userscript or the extension.
 
 ## Which one to pick
 
@@ -63,7 +66,7 @@ Remove sites from the list in the popup.
 |---|---|---|---|---|
 | Install | none | Tampermonkey | load unpacked | none |
 | How it starts | click on each page | automatically | automatically, on the sites you pick | paste on each page |
-| Reliability | good | best | best (after one reload) | good |
+| Reliability | good | best | best (reloads the page once) | good |
 
 The bookmarklet and the console run only after the page has loaded. They hide everything except
 `blur` listeners the page had already added with `addEventListener` before that. If a page still
@@ -84,14 +87,6 @@ After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
 `focus-bypass.bookmarklet.txt`, `index.html`, `demo.html` and `extension/guard.js`, and copies `@version` into
 `extension/manifest.json`. Then click the reload icon on the extension's card in `chrome://extensions`. When you publish a new version, also bump
 `@version` so Tampermonkey picks up the update.
-
-## Releasing
-
-1. Bump `@version` in `focus-bypass.user.js`.
-2. Run `node build-extension.mjs`. It builds `dist/tabsent-extension.zip` with
-   `manifest.json` at the ZIP root.
-3. Create a GitHub release tagged `v<version>` and attach that ZIP. The install page links to
-   `releases/latest/download/tabsent-extension.zip`, so keep the asset name unchanged.
 
 ## Files
 

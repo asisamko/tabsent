@@ -38,6 +38,12 @@ async function setHints(tabIds, mode) {
   if (tabIds.length) await chrome.storage.session.set(Object.fromEntries(tabIds.map((id) => [hintKey(id), mode])));
 }
 
+/** Reload a tab after enabling, so the guard runs at document_start before the page's own scripts. */
+export async function reloadTab(tabId) {
+  if (!tabId) return;
+  await chrome.tabs.reload(tabId).catch(() => {});
+}
+
 /** Tabs currently showing a page of `host` (needs host access). */
 async function tabsOf(host) {
   return (await chrome.tabs.query({ url: originOf(host) }).catch(() => [])).filter((t) => hostOf(t.url) === host);

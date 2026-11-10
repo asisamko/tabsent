@@ -1,6 +1,6 @@
 // Service worker: keeps the guard registered for the chosen sites and the toolbar badge in sync.
 
-import { ALL, originOf, getSettings, isGuarded, hostOf, hintKey, enableSite, enableAll } from './common.js';
+import { ALL, originOf, getSettings, isGuarded, hostOf, hintKey, enableSite, enableAll, reloadTab } from './common.js';
 
 const SCRIPT_ID = 'focus-bypass-guard';
 const ACCENT = '#D97757';
@@ -56,6 +56,15 @@ chrome.runtime.onStartup.addListener(() => {
   updateAllBadges();
 });
 
+// The popup asks for this before reloading a page, so the guard is registered at document_start
+// before the new document loads.
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg?.type === 'syncScripts') {
+    syncScripts().then(() => sendResponse(true));
+    return true;
+  }
+});
+
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && ('sites' in changes || 'allSites' in changes)) {
     syncScripts();
@@ -77,8 +86,15 @@ chrome.permissions.onAdded.addListener(({ origins = [] }) => {
     const { pending } = await chrome.storage.session.get('pending');
     if (!pending) return;
     await chrome.storage.session.remove('pending');
-    if (pending.kind === 'all' && origins.includes(ALL)) await enableAll();
-    else if (pending.kind === 'site' && (origins.includes(originOf(pending.host)) || origins.includes(ALL)))
+    if (Date.now() - (pending.ts ?? 0) > 120000) return; // left over from a popup that was closed long ago
+    if (pending.kind === 'all' && origins.includes(ALL)) {
+      await enableAll();
+      await syncScripts();
+      await reloadTab(pending.tabId);
+    } else if (pending.kind === 'site' && (origins.includes(originOf(pending.host)) || origins.includes(ALL))) {
       await enableSite(pending.host);
+      await syncScripts();
+      await reloadTab(pending.tabId);
+    }
   }, 1500);
 });

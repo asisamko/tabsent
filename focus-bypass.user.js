@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TabSent
 // @namespace    https://github.com/asisamko/tabsent
-// @version      1.1.0
+// @version      1.1.1
 // @description  Stop websites from noticing that you switched to another window or tab (blur / visibilitychange / hasFocus).
 // @homepageURL  https://github.com/asisamko/tabsent
 // @downloadURL  https://raw.githubusercontent.com/asisamko/tabsent/main/focus-bypass.user.js

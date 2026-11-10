@@ -1,4 +1,4 @@
-import { ALL, originOf, pageInfo, getSettings, hintKey, enableSite, disableSite, enableAll, disableAll } from './common.js';
+import { ALL, originOf, pageInfo, getSettings, hintKey, enableSite, disableSite, enableAll, disableAll, reloadTab } from './common.js';
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -96,15 +96,23 @@ function showError(msg) {
 /**
  * Ask Chrome for host access. Must start synchronously inside the click (user gesture).
  * `pending` lets the service worker finish the job if the popup closes while the dialog is open.
+ * After access is granted the page reloads once, so the guard starts before the page's own scripts.
  */
 function requestAccess(origins, pending, onGranted, deniedMsg) {
-  chrome.storage.session.set({ pending });
+  const id = crypto.randomUUID();
+  chrome.storage.session.set({ pending: { ...pending, id, ts: Date.now() } });
   const request = chrome.permissions.request({ origins });
   run(async () => {
     const ok = await request;
+    const { pending: current } = await chrome.storage.session.get('pending');
+    if (current?.id !== id) return; // the service worker finished it while the popup was closing
     await chrome.storage.session.remove('pending');
-    if (ok) await onGranted();
-    else showError(deniedMsg);
+    if (!ok) return showError(deniedMsg);
+    await onGranted();
+    // Make sure the document_start registration is in place before the page reloads.
+    await chrome.runtime.sendMessage({ type: 'syncScripts' }).catch(() => {});
+    await reloadTab(tab?.id);
+    if (!forcedTab) window.close();
   });
 }
 
@@ -112,17 +120,23 @@ els.siteToggle.addEventListener('click', () => {
   const { host } = page;
   if (!host || state.allOn) return;
   if (state.siteOn) run(() => disableSite(host));
-  else requestAccess([originOf(host)], { kind: 'site', host }, () => enableSite(host), 'Chrome didn’t allow access to this site.');
+  else
+    requestAccess(
+      [originOf(host)],
+      { kind: 'site', host, tabId: tab?.id ?? null },
+      () => enableSite(host),
+      'Chrome didn’t allow access to this site.',
+    );
 });
 
 els.allToggle.addEventListener('click', () => {
   if (state.allOn) run(disableAll);
-  else requestAccess([ALL], { kind: 'all' }, enableAll, 'Chrome didn’t allow access to all sites.');
+  else requestAccess([ALL], { kind: 'all', tabId: tab?.id ?? null }, enableAll, 'Chrome didn’t allow access to all sites.');
 });
 
 els.reload.addEventListener('click', async () => {
   if (!tab) return;
-  await chrome.tabs.reload(tab.id);
+  await reloadTab(tab.id);
   if (!forcedTab) window.close();
 });
 

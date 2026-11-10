@@ -88,8 +88,11 @@ const html = `<!doctype html>
   .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
   .muted { color: var(--muted); font-size: 13.5px; }
   kbd { font: 600 12px ui-monospace, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; }
-  textarea { position: absolute; left: -9999px; }
-  #ok { color: #2E7D4F; font-size: 14px; }
+  details.code { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+  details.code summary { cursor: pointer; color: var(--muted); font-size: 13.5px; user-select: none; }
+  details.code summary:hover { color: var(--text); }
+  details.code pre { margin: 10px 0 0; padding: 12px 14px; max-height: 260px; overflow: auto; background: color-mix(in srgb, var(--text) 5%, transparent); border: 1px solid var(--border); border-radius: 10px; font: 12px/1.55 ui-monospace, Menlo, monospace; }
+  #ok { color: #2E7D4F; font-size: 13.5px; }
   .credit { text-align: center; color: var(--muted); font-size: 13px; margin: 28px 0 0; }
   .credit a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
   .credit a:hover { color: var(--accent); }
@@ -148,28 +151,70 @@ const html = `<!doctype html>
       <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
       <li>Click <b>Load unpacked</b> and pick the unzipped folder (the one with <code>manifest.json</code>).</li>
     </ol>
-    <p class="muted">Pin it to the toolbar, then click its icon on any site and switch it on. Chrome asks for access to just that site (or to all sites, if you choose that). Tabs where it is on show an <b>ON</b> badge.</p>
+    <p class="muted">Pin it to the toolbar, then click its icon on any site and switch it on. Chrome asks for access to just that site (or to all sites, if you choose that). The page reloads once so the guard starts before its scripts. Tabs where it is on show an <b>ON</b> badge.</p>
   </section>
 
   <section class="card">
     <h2>4. Console <span class="tag">no install</span></h2>
+    <p class="muted">Temporary: it lasts until you reload the page. Good for a quick try without installing anything.</p>
     <ol>
       <li>Click <b>Copy script</b>.</li>
-      <li>On the target page, open the console: <kbd>⌥</kbd><kbd>⌘</kbd><kbd>J</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>J</kbd> (Windows).</li>
-      <li>Paste and press <kbd>Enter</kbd>. (Chrome may first ask you to type <code>allow pasting</code>.)</li>
+      <li>On the page you want to protect, open the console: <kbd>⌥</kbd><kbd>⌘</kbd><kbd>J</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>J</kbd> (Windows).</li>
+      <li>Paste and press <kbd>Enter</kbd>. If Chrome asks, type <code>allow pasting</code> first.</li>
     </ol>
-    <div class="row"><button class="btn ghost" id="copy">Copy script</button><span id="ok" hidden>Copied ✓</span></div>
-    <textarea id="code" readonly>${esc(code)}</textarea>
+    <div class="row"><button class="btn ghost" id="copy" type="button">Copy script</button><span id="ok" role="status" aria-live="polite"></span></div>
+    <details class="code">
+      <summary>Show the script</summary>
+      <pre><code id="code">${esc(code)}</code></pre>
+    </details>
   </section>
   <footer class="credit">Built by <a href="https://oryks.org" target="_blank" rel="noopener">oryks.org</a></footer>
 </main>
 <script>
-  document.getElementById('copy').addEventListener('click', async () => {
-    const text = document.getElementById('code').value;
-    try { await navigator.clipboard.writeText(text); }
-    catch { const t = document.getElementById('code'); t.select(); document.execCommand('copy'); }
-    const ok = document.getElementById('ok'); ok.hidden = false; setTimeout(() => (ok.hidden = true), 2000);
-  });
+  (() => {
+    const copyBtn = document.getElementById('copy');
+    const ok = document.getElementById('ok');
+    const codeEl = document.getElementById('code');
+    const details = codeEl.closest('details');
+    let timer;
+
+    function feedback(buttonText, message) {
+      copyBtn.textContent = buttonText;
+      ok.textContent = message;
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        copyBtn.textContent = 'Copy script';
+        ok.textContent = '';
+      }, 3000);
+    }
+
+    copyBtn.addEventListener('click', async () => {
+      const text = codeEl.textContent;
+      let copied = true;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        try {
+          const area = document.createElement('textarea');
+          area.value = text;
+          area.setAttribute('readonly', '');
+          area.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+          document.body.append(area);
+          area.select();
+          copied = document.execCommand('copy');
+          area.remove();
+        } catch {
+          copied = false;
+        }
+      }
+      if (copied) {
+        feedback('Copied ✓', 'Now paste it into the console on the page you want to protect.');
+      } else {
+        details.open = true;
+        feedback('Select and copy', 'Automatic copy didn’t work — select the script below and copy it manually.');
+      }
+    });
+  })();
 </script>
 </body>
 </html>
