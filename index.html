@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Window Focus Bypass</title>
+<style>
+  :root { color-scheme: light dark; --accent: #D97757; --bg: #FAF9F5; --card: #fff; --text: #2B2A27; --muted: #77736A; --border: #E5E1D6; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1C1B19; --card: #262523; --text: #ECE9E2; --muted: #A29D93; --border: #3A3834; --accent: #E08A6D; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 620px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .lead { color: var(--muted); margin: 0 0 24px; }
+  a { color: var(--accent); }
+  a.btn { color: #fff; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+  .card h2 { font-size: 16px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
+  .tag { font-size: 11.5px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+  .card p, .card ol { margin: 6px 0; }
+  .card ol { padding-left: 20px; }
+  .btn { display: inline-block; background: var(--accent); color: #fff; font-weight: 650; text-decoration: none; border: none; border-radius: 10px; padding: 9px 16px; font-size: 15px; cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 500; }
+  .drag { cursor: grab; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .muted { color: var(--muted); font-size: 13.5px; }
+  kbd { font: 600 12px ui-monospace, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; }
+  textarea { position: absolute; left: -9999px; }
+  #ok { color: #2E7D4F; font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Window Focus Bypass</h1>
+  <p class="lead">Stop websites from noticing that you switched to another window, tab or app. The page always thinks it is visible and focused.</p>
+
+  <section class="card">
+    <h2>1. Bookmarklet <span class="tag">easiest</span></h2>
+    <ol>
+      <li>Show the bookmarks bar: <kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd> (Windows).</li>
+      <li>Drag this button onto the bookmarks bar:</li>
+    </ol>
+    <div class="row"><a class="btn drag" href="javascript:(()%20%3D%3E%20%7B%20const%20FLAG%20%3D%20Symbol.for('windowFocusBypass')%3B%20if%20(window%5BFLAG%5D)%20return%3B%20Object.defineProperty(window%2C%20FLAG%2C%20%7B%20value%3A%20true%20%7D)%3B%20const%20getter%20%3D%20(proto%2C%20prop%2C%20value)%20%3D%3E%20%7B%20try%20%7B%20Object.defineProperty(proto%2C%20prop%2C%20%7B%20configurable%3A%20true%2C%20enumerable%3A%20true%2C%20get%3A%20()%20%3D%3E%20value%20%7D)%3B%20%7D%20catch%20%7B%20%7D%20%7D%3B%20getter(Document.prototype%2C%20'hidden'%2C%20false)%3B%20getter(Document.prototype%2C%20'webkitHidden'%2C%20false)%3B%20getter(Document.prototype%2C%20'visibilityState'%2C%20'visible')%3B%20getter(Document.prototype%2C%20'webkitVisibilityState'%2C%20'visible')%3B%20const%20realHasFocus%20%3D%20Document.prototype.hasFocus%3B%20try%20%7B%20Document.prototype.hasFocus%20%3D%20function%20hasFocus()%20%7B%20return%20true%3B%20%7D%3B%20%7D%20catch%20%7B%20%7D%20const%20isPageLevel%20%3D%20(t)%20%3D%3E%20t%20%3D%3D%3D%20window%20%7C%7C%20t%20%3D%3D%3D%20document%20%7C%7C%20t%20%3D%3D%3D%20document.documentElement%20%7C%7C%20t%20%3D%3D%3D%20document.body%3B%20const%20windowLostFocus%20%3D%20()%20%3D%3E%20%7B%20try%20%7B%20return%20!realHasFocus.call(document)%3B%20%7D%20catch%20%7B%20return%20false%3B%20%7D%20%7D%3B%20const%20stop%20%3D%20(e)%20%3D%3E%20%7B%20if%20(isPageLevel(e.target)%20%7C%7C%20windowLostFocus())%20e.stopImmediatePropagation()%3B%20%7D%3B%20for%20(const%20type%20of%20%5B'blur'%2C%20'focusout'%5D)%20window.addEventListener(type%2C%20stop%2C%20true)%3B%20const%20stopVisibility%20%3D%20(e)%20%3D%3E%20e.stopImmediatePropagation()%3B%20for%20(const%20type%20of%20%5B'visibilitychange'%2C%20'webkitvisibilitychange'%5D)%20window.addEventListener(type%2C%20stopVisibility%2C%20true)%3B%20const%20stopLeave%20%3D%20(e)%20%3D%3E%20%7B%20if%20(!e.relatedTarget%20%26%26%20isPageLevel(e.target))%20e.stopImmediatePropagation()%3B%20%7D%3B%20for%20(const%20type%20of%20%5B'mouseleave'%2C%20'mouseout'%2C%20'pointerleave'%2C%20'pointerout'%5D)%20window.addEventListener(type%2C%20stopLeave%2C%20true)%3B%20const%20muteHandler%20%3D%20(obj%2C%20prop)%20%3D%3E%20%7B%20try%20%7B%20obj%5Bprop%5D%20%3D%20null%3B%20Object.defineProperty(obj%2C%20prop%2C%20%7B%20configurable%3A%20true%2C%20get%3A%20()%20%3D%3E%20null%2C%20set%3A%20()%20%3D%3E%20%7B%7D%20%7D)%3B%20%7D%20catch%20%7B%20%7D%20%7D%3B%20for%20(const%20prop%20of%20%5B'onblur'%2C%20'onfocusout'%2C%20'onvisibilitychange'%2C%20'onmouseleave'%2C%20'onmouseout'%5D)%20%7B%20muteHandler(window%2C%20prop)%3B%20muteHandler(document%2C%20prop)%3B%20%7D%20if%20(document.readyState%20!%3D%3D%20'loading')%20console.info('Window%20Focus%20Bypass%3A%20focus%20changes%20are%20now%20hidden%20from%20this%20page.')%3B%20%7D)()%3Bvoid 0" onclick="event.preventDefault(); alert('Don\'t click it – drag it onto your bookmarks bar.')">🙈 Focus Bypass</a></div>
+    <p class="muted">Then click the bookmark on the page where you want it. It stays active until you reload the page. Works almost everywhere; a few pages start watching focus before you can click the bookmark – use the userscript there.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Userscript <span class="tag">most reliable</span></h2>
+    <ol>
+      <li>Install the <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener">Tampermonkey</a> or <a href="https://violentmonkey.github.io/" target="_blank" rel="noopener">Violentmonkey</a> extension.</li>
+      <li>Click the button and confirm the install:</li>
+    </ol>
+    <div class="row"><a class="btn" href="https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js">Install userscript</a></div>
+    <p class="muted">Runs automatically on every page, before the page's own scripts, and updates itself. Switch it off in Tampermonkey with one click.</p>
+  </section>
+
+  <section class="card">
+    <h2>3. Console <span class="tag">no install</span></h2>
+    <ol>
+      <li>Click <b>Copy script</b>.</li>
+      <li>On the target page, open the console: <kbd>⌥</kbd><kbd>⌘</kbd><kbd>J</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>J</kbd> (Windows).</li>
+      <li>Paste and press <kbd>Enter</kbd>. (Chrome may first ask you to type <code>allow pasting</code>.)</li>
+    </ol>
+    <div class="row"><button class="btn ghost" id="copy">Copy script</button><span id="ok" hidden>Copied ✓</span></div>
+    <textarea id="code" readonly>(() =&gt; {
+  const FLAG = Symbol.for('windowFocusBypass');
+  if (window[FLAG]) return;
+  Object.defineProperty(window, FLAG, { value: true });
+
+  const getter = (proto, prop, value) =&gt; {
+    try {
+      Object.defineProperty(proto, prop, { configurable: true, enumerable: true, get: () =&gt; value });
+    } catch {
+      /* not configurable on this page */
+    }
+  };
+  getter(Document.prototype, 'hidden', false);
+  getter(Document.prototype, 'webkitHidden', false);
+  getter(Document.prototype, 'visibilityState', 'visible');
+  getter(Document.prototype, 'webkitVisibilityState', 'visible');
+
+  const realHasFocus = Document.prototype.hasFocus;
+  try {
+    Document.prototype.hasFocus = function hasFocus() {
+      return true;
+    };
+  } catch {
+    /* ignore */
+  }
+
+  const isPageLevel = (t) =&gt; t === window || t === document || t === document.documentElement || t === document.body;
+  // Element blur/focusout is swallowed only when the whole window lost focus,
+  // so moving between fields on the page keeps working.
+  const windowLostFocus = () =&gt; {
+    try {
+      return !realHasFocus.call(document);
+    } catch {
+      return false;
+    }
+  };
+
+  const stop = (e) =&gt; {
+    if (isPageLevel(e.target) || windowLostFocus()) e.stopImmediatePropagation();
+  };
+  for (const type of ['blur', 'focusout']) window.addEventListener(type, stop, true);
+
+  const stopVisibility = (e) =&gt; e.stopImmediatePropagation();
+  for (const type of ['visibilitychange', 'webkitvisibilitychange']) window.addEventListener(type, stopVisibility, true);
+
+  const stopLeave = (e) =&gt; {
+    if (!e.relatedTarget &amp;&amp; isPageLevel(e.target)) e.stopImmediatePropagation();
+  };
+  for (const type of ['mouseleave', 'mouseout', 'pointerleave', 'pointerout']) window.addEventListener(type, stopLeave, true);
+
+  // Inline handlers (window.onblur = …, document.onvisibilitychange = …): drop any already set
+  // and ignore new ones, so even a late injection silences them.
+  const muteHandler = (obj, prop) =&gt; {
+    try {
+      obj[prop] = null;
+      Object.defineProperty(obj, prop, { configurable: true, get: () =&gt; null, set: () =&gt; {} });
+    } catch {
+      /* ignore */
+    }
+  };
+  for (const prop of ['onblur', 'onfocusout', 'onvisibilitychange', 'onmouseleave', 'onmouseout']) {
+    muteHandler(window, prop);
+    muteHandler(document, prop);
+  }
+  if (document.readyState !== 'loading') console.info('Window Focus Bypass: focus changes are now hidden from this page.');
+})();</textarea>
+  </section>
+</main>
+<script>
+  document.getElementById('copy').addEventListener('click', async () => {
+    const text = document.getElementById('code').value;
+    try { await navigator.clipboard.writeText(text); }
+    catch { const t = document.getElementById('code'); t.select(); document.execCommand('copy'); }
+    const ok = document.getElementById('ok'); ok.hidden = false; setTimeout(() => (ok.hidden = true), 2000);
+  });
+</script>
+</body>
+</html>

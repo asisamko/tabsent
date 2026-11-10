@@ -1,23 +1,20 @@
 // ==UserScript==
-// @name         Klaudík – skryť odchod z okna
-// @namespace    klaudik
+// @name         Window Focus Bypass
+// @namespace    https://github.com/asisamko/window-focus-bypass
 // @version      1.0.0
-// @description  Stránka neuvidí, že si prepol na iné okno alebo kartu (blur / visibilitychange / hasFocus).
+// @description  Stop websites from noticing that you switched to another window or tab (blur / visibilitychange / hasFocus).
+// @homepageURL  https://github.com/asisamko/window-focus-bypass
+// @downloadURL  https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js
+// @updateURL    https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js
 // @match        *://*/*
 // @run-at       document-start
 // @grant        none
 // @inject-into  page
 // ==/UserScript==
 
-// Samostatná verzia bez rozšírenia. Použitie:
-//  - Tampermonkey / Violentmonkey: nainštaluj tento súbor ako userscript (beží pred skriptami stránky).
-//  - Konzola: otvor DevTools (⌥⌘J / Ctrl+Shift+J), vlož celý súbor a stlač Enter.
-//  - Záložka: použi focus-bypass.bookmarklet.txt.
-// Konzola a záložka sa spustia až po načítaní stránky: skryjú document.hidden / visibilityState /
-// hasFocus, visibilitychange, onblur a všetky neskôr pridané listenery, ale `blur` listenery, ktoré
-// si stránka cez addEventListener pridala ešte predtým, udalosť dostanú. Spoľahlivý je userscript.
+// How to use: see README.md (userscript, bookmarklet or console).
 (() => {
-  const FLAG = Symbol.for('klaudik.focusGuard');
+  const FLAG = Symbol.for('windowFocusBypass');
   if (window[FLAG]) return;
   Object.defineProperty(window, FLAG, { value: true });
 
@@ -80,5 +77,5 @@
     muteHandler(window, prop);
     muteHandler(document, prop);
   }
-  if (document.readyState !== 'loading') console.info('Klaudík: odchod z okna je pred touto stránkou skrytý.');
+  if (document.readyState !== 'loading') console.info('Window Focus Bypass: focus changes are now hidden from this page.');
 })();

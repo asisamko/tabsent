@@ -1,0 +1,100 @@
+// Builds the bookmarklet (focus-bypass.bookmarklet.txt) and the install page (index.html) from focus-bypass.user.js.
+// Run after every change to the script: node build.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const dir = path.dirname(fileURLToPath(import.meta.url));
+const src = fs.readFileSync(path.join(dir, 'focus-bypass.user.js'), 'utf8');
+const code = src.slice(src.indexOf('(() => {')).trim();
+const body = code
+  .split('\n')
+  .map((l) => l.replace(/^\s*\/\/.*$/, '').replace(/\/\*[^*]*\*\//g, '').trim())
+  .filter(Boolean)
+  .join(' ');
+const bookmarklet = `javascript:${encodeURIComponent(body)}void 0`;
+fs.writeFileSync(path.join(dir, 'focus-bypass.bookmarklet.txt'), `${bookmarklet}\n`);
+
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const RAW = 'https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js';
+
+const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Window Focus Bypass</title>
+<style>
+  :root { color-scheme: light dark; --accent: #D97757; --bg: #FAF9F5; --card: #fff; --text: #2B2A27; --muted: #77736A; --border: #E5E1D6; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1C1B19; --card: #262523; --text: #ECE9E2; --muted: #A29D93; --border: #3A3834; --accent: #E08A6D; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 620px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .lead { color: var(--muted); margin: 0 0 24px; }
+  a { color: var(--accent); }
+  a.btn { color: #fff; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+  .card h2 { font-size: 16px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
+  .tag { font-size: 11.5px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+  .card p, .card ol { margin: 6px 0; }
+  .card ol { padding-left: 20px; }
+  .btn { display: inline-block; background: var(--accent); color: #fff; font-weight: 650; text-decoration: none; border: none; border-radius: 10px; padding: 9px 16px; font-size: 15px; cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 500; }
+  .drag { cursor: grab; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .muted { color: var(--muted); font-size: 13.5px; }
+  kbd { font: 600 12px ui-monospace, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; }
+  textarea { position: absolute; left: -9999px; }
+  #ok { color: #2E7D4F; font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Window Focus Bypass</h1>
+  <p class="lead">Stop websites from noticing that you switched to another window, tab or app. The page always thinks it is visible and focused.</p>
+
+  <section class="card">
+    <h2>1. Bookmarklet <span class="tag">easiest</span></h2>
+    <ol>
+      <li>Show the bookmarks bar: <kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd> (Windows).</li>
+      <li>Drag this button onto the bookmarks bar:</li>
+    </ol>
+    <div class="row"><a class="btn drag" href="${esc(bookmarklet)}" onclick="event.preventDefault(); alert('Don\\'t click it – drag it onto your bookmarks bar.')">🙈 Focus Bypass</a></div>
+    <p class="muted">Then click the bookmark on the page where you want it. It stays active until you reload the page. Works almost everywhere; a few pages start watching focus before you can click the bookmark – use the userscript there.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Userscript <span class="tag">most reliable</span></h2>
+    <ol>
+      <li>Install the <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener">Tampermonkey</a> or <a href="https://violentmonkey.github.io/" target="_blank" rel="noopener">Violentmonkey</a> extension.</li>
+      <li>Click the button and confirm the install:</li>
+    </ol>
+    <div class="row"><a class="btn" href="${RAW}">Install userscript</a></div>
+    <p class="muted">Runs automatically on every page, before the page's own scripts, and updates itself. Switch it off in Tampermonkey with one click.</p>
+  </section>
+
+  <section class="card">
+    <h2>3. Console <span class="tag">no install</span></h2>
+    <ol>
+      <li>Click <b>Copy script</b>.</li>
+      <li>On the target page, open the console: <kbd>⌥</kbd><kbd>⌘</kbd><kbd>J</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>J</kbd> (Windows).</li>
+      <li>Paste and press <kbd>Enter</kbd>. (Chrome may first ask you to type <code>allow pasting</code>.)</li>
+    </ol>
+    <div class="row"><button class="btn ghost" id="copy">Copy script</button><span id="ok" hidden>Copied ✓</span></div>
+    <textarea id="code" readonly>${esc(code)}</textarea>
+  </section>
+</main>
+<script>
+  document.getElementById('copy').addEventListener('click', async () => {
+    const text = document.getElementById('code').value;
+    try { await navigator.clipboard.writeText(text); }
+    catch { const t = document.getElementById('code'); t.select(); document.execCommand('copy'); }
+    const ok = document.getElementById('ok'); ok.hidden = false; setTimeout(() => (ok.hidden = true), 2000);
+  });
+</script>
+</body>
+</html>
+`;
+fs.writeFileSync(path.join(dir, 'index.html'), html);
+console.log(`done: bookmarklet ${bookmarklet.length} chars, index.html`);
