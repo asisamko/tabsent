@@ -50,6 +50,7 @@ const html = `<!doctype html>
   a { color: var(--accent); }
   a.btn { color: #fff; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+  .card.demo { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
   .card h2 { font-size: 16px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
   .tag { font-size: 11.5px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
   .card p, .card ol { margin: 6px 0; }
@@ -68,6 +69,12 @@ const html = `<!doctype html>
 <main>
   <h1>Window Focus Bypass</h1>
   <p class="lead">Stop websites from noticing that you switched to another window, tab or app. The page always thinks it is visible and focused.</p>
+
+  <section class="card demo">
+    <h2>Live demo <span class="tag">see it work</span></h2>
+    <p>A page that watches whether the window is focused. Switch away and it notices — then turn the bypass on and it stops.</p>
+    <div class="row"><a class="btn" href="demo.html">Open the live demo →</a></div>
+  </section>
 
   <section class="card">
     <h2>1. Bookmarklet <span class="tag">easiest</span></h2>
@@ -122,4 +129,251 @@ const html = `<!doctype html>
 </html>
 `;
 fs.writeFileSync(path.join(dir, 'index.html'), html);
-console.log(`done: bookmarklet ${bookmarklet.length} chars, index.html, extension/guard.js (v${manifest.version})`);
+
+// Live demo: a page that watches focus, plus the generated guard behind a button.
+const demo = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live demo — Window Focus Bypass</title>
+<style>
+  :root { color-scheme: light dark; --accent: #D97757; --bg: #FAF9F5; --card: #fff; --text: #2B2A27; --muted: #77736A; --border: #E5E1D6; --good: #2E7D4F; --bad: #B3402A; --warn: #9A6B1F; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1C1B19; --card: #262523; --text: #ECE9E2; --muted: #A29D93; --border: #3A3834; --accent: #E08A6D; --good: #7FD3A2; --bad: #F0A08C; --warn: #E2BD7A; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .back { margin: 0 0 18px; font-size: 14px; }
+  .lead { color: var(--muted); margin: 0 0 24px; }
+  a { color: var(--accent); }
+  a.btn { color: #fff; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+  .card h2 { font-size: 16px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
+  .tag { font-size: 11.5px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+  .card p, .card ol { margin: 6px 0; }
+  .card ol { padding-left: 20px; }
+  .btn { display: inline-block; background: var(--accent); color: #fff; font-weight: 650; text-decoration: none; border: none; border-radius: 10px; padding: 9px 16px; font-size: 15px; cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 500; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .muted { color: var(--muted); font-size: 13.5px; }
+  .status-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.off { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }
+  .status-line { font-size: 17px; font-weight: 600; margin: 12px 0 0; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .stat { background: color-mix(in srgb, var(--accent) 6%, transparent); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .stat .num { display: block; font-size: 28px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .stat .label { color: var(--muted); font-size: 12.5px; }
+  .values { margin: 8px 0 4px; display: grid; gap: 0; }
+  .values > div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--border); padding: 7px 0; }
+  .values > div:last-child { border-bottom: 0; }
+  .values dt { color: var(--muted); font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+  .values dd { margin: 0; font-family: ui-monospace, Menlo, monospace; font-size: 13px; font-weight: 600; }
+  .log { list-style: none; margin: 8px 0 0; padding: 0; max-height: 220px; overflow: auto; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
+  .log li { display: flex; gap: 10px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .log li:last-child { border-bottom: 0; }
+  .log .t { color: var(--muted); flex: none; }
+  .log li.bad { color: var(--bad); }
+  .log li.good { color: var(--good); }
+  .log li.warn { color: var(--warn); }
+</style>
+</head>
+<body>
+<main>
+  <p class="back"><a href="index.html">← Window Focus Bypass</a></p>
+  <h1>Live demo</h1>
+  <p class="lead">This page watches whether the window is focused. Activate the bypass and it stops noticing when you leave.</p>
+
+  <section class="card">
+    <div class="status-row">
+      <span class="pill" id="pill"><span class="dot"></span><span id="pill-text">FOCUSED</span></span>
+      <span class="tag" id="bypass-badge" hidden>bypass active</span>
+    </div>
+    <p class="status-line" id="status-line">The page thinks you are here.</p>
+    <div class="stats">
+      <div class="stat"><span class="num" id="losses">0</span><span class="label">focus losses detected</span></div>
+      <div class="stat"><span class="num" id="timer">0:00</span><span class="label">time counted as focused</span></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="activate">Activate Focus Bypass</button>
+      <button class="btn ghost" id="reload">Reload demo</button>
+    </div>
+    <p class="muted" id="hint">Switch to another tab or app for a few seconds, then come back. Watch the counter and the timer.</p>
+  </section>
+
+  <section class="card">
+    <h2>What this page sees</h2>
+    <dl class="values">
+      <div><dt>document.hidden</dt><dd id="v-hidden">false</dd></div>
+      <div><dt>document.visibilityState</dt><dd id="v-visibility">visible</dd></div>
+      <div><dt>document.hasFocus()</dt><dd id="v-focus">true</dd></div>
+      <div><dt>window.onblur</dt><dd id="v-handler">installed</dd></div>
+    </dl>
+    <p class="muted">Read live from the page. After the bypass these keep reporting a focused window, even while you are away.</p>
+  </section>
+
+  <section class="card">
+    <h2>Event log</h2>
+    <ol class="log" id="log"><li class="muted empty">Waiting for focus changes…</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try it</h2>
+    <ol>
+      <li>Leave this tab or switch to another app for a few seconds. The counter goes up and the timer pauses.</li>
+      <li>Click <b>Activate Focus Bypass</b>.</li>
+      <li>Leave again and come back. The counter stays put, the timer keeps counting, and the status never changes.</li>
+    </ol>
+    <p class="muted">The bypass lasts until you reload the page. In real use, install the <a href="index.html">userscript or extension</a> so it runs before the page's own scripts.</p>
+  </section>
+</main>
+
+<script type="text/plain" id="bypass-src">${code.replace(/<\/script/gi, '<\\/script')}</script>
+<script>
+(() => {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const pill = $('pill');
+  const pillText = $('pill-text');
+  const statusLine = $('status-line');
+  const lossesEl = $('losses');
+  const timerEl = $('timer');
+  const logEl = $('log');
+  const activateBtn = $('activate');
+  const reloadBtn = $('reload');
+  const hint = $('hint');
+  const badge = $('bypass-badge');
+  const bypassSrc = $('bypass-src');
+
+  let believed = perceived();
+  let losses = 0;
+  let focusedMs = 0;
+  let focusedSince = believed ? performance.now() : 0;
+  let bypassed = false;
+
+  function perceived() {
+    try {
+      return !document.hidden && document.hasFocus();
+    } catch {
+      return true;
+    }
+  }
+
+  function pad(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function clock() {
+    const d = new Date();
+    return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+
+  function format(ms) {
+    const total = Math.floor(ms / 1000);
+    return Math.floor(total / 60) + ':' + pad(total % 60);
+  }
+
+  function log(text, kind) {
+    const empty = logEl.querySelector('.empty');
+    if (empty) empty.remove();
+    const li = document.createElement('li');
+    if (kind) li.className = kind;
+    const t = document.createElement('span');
+    t.className = 't';
+    t.textContent = clock();
+    const msg = document.createElement('span');
+    msg.textContent = text;
+    li.appendChild(t);
+    li.appendChild(msg);
+    logEl.prepend(li);
+    while (logEl.children.length > 12) logEl.lastElementChild.remove();
+  }
+
+  function render() {
+    let hidden = false;
+    let visibility = 'visible';
+    let hasFocus = true;
+    try { hidden = document.hidden; } catch {}
+    try { visibility = document.visibilityState; } catch {}
+    try { hasFocus = document.hasFocus(); } catch {}
+
+    $('v-hidden').textContent = String(hidden);
+    $('v-visibility').textContent = String(visibility);
+    $('v-focus').textContent = String(hasFocus);
+    $('v-handler').textContent = window.onblur ? 'installed' : 'muted';
+
+    pill.classList.toggle('off', !believed);
+    pillText.textContent = believed ? 'FOCUSED' : 'NOT FOCUSED';
+    statusLine.textContent = believed
+      ? 'The page thinks you are here.'
+      : 'The page noticed that you left.';
+
+    lossesEl.textContent = String(losses);
+    const total = focusedMs + (believed ? performance.now() - focusedSince : 0);
+    timerEl.textContent = format(total);
+  }
+
+  function setBelieved(next, source) {
+    if (next === believed) return;
+    const now = performance.now();
+    if (believed) {
+      focusedMs += now - focusedSince;
+    } else {
+      focusedSince = now;
+    }
+    believed = next;
+    if (!next) {
+      losses += 1;
+      log('focus lost (' + source + ')', 'bad');
+    } else {
+      log('focus back (' + source + ')', 'good');
+    }
+    render();
+  }
+
+  window.onblur = () => setBelieved(false, 'blur');
+  window.onfocus = () => setBelieved(true, 'focus');
+  document.onvisibilitychange = () => setBelieved(
+    !document.hidden && document.hasFocus(),
+    'visibilitychange: ' + document.visibilityState
+  );
+  document.onmouseout = (e) => {
+    if (!e.relatedTarget) log('mouse left the page', 'warn');
+  };
+
+  setInterval(() => {
+    setBelieved(perceived(), 'poll');
+    render();
+  }, 250);
+
+  activateBtn.addEventListener('click', () => {
+    if (bypassed) return;
+    try {
+      (0, eval)(bypassSrc.textContent);
+    } catch (err) {
+      log('could not activate: ' + err.message, 'bad');
+      return;
+    }
+    bypassed = true;
+    activateBtn.disabled = true;
+    activateBtn.textContent = 'Bypass active';
+    badge.hidden = false;
+    hint.textContent = 'Now switch to another tab or app for a few seconds, then come back. The page will not notice.';
+    setBelieved(true, 'bypass');
+    log('bypass activated — focus changes are hidden', 'good');
+    render();
+  });
+
+  reloadBtn.addEventListener('click', () => location.reload());
+  render();
+})();
+</script>
+</body>
+</html>
+`;
+fs.writeFileSync(path.join(dir, 'demo.html'), demo);
+console.log(`done: bookmarklet ${bookmarklet.length} chars, index.html, demo.html, extension/guard.js (v${manifest.version})`);

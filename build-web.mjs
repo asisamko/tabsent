@@ -37,6 +37,11 @@ if (site) {
 fs.writeFileSync(path.join(out, 'focus-bypass.user.js'), userscript);
 fs.copyFileSync(path.join(dir, 'focus-bypass.bookmarklet.txt'), path.join(out, 'focus-bypass.bookmarklet.txt'));
 
+// Demo page: self-contained (the guard is inlined), just point its links back at the site root.
+let demo = fs.readFileSync(path.join(dir, 'demo.html'), 'utf8');
+demo = demo.replaceAll('href="index.html"', 'href="/"');
+fs.writeFileSync(path.join(out, 'demo.html'), demo);
+
 // Install page: install from this site instead of GitHub, plus favicon and share meta tags.
 const description = 'Stop websites from noticing that you switched to another window, tab or app.';
 let html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');

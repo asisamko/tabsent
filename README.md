@@ -5,6 +5,9 @@ The page always thinks it is visible and focused.
 
 **Quickest start:** open [`index.html`](index.html) (double-click the file) and follow the steps there.
 
+**See it work:** open [`demo.html`](demo.html) — a page that watches whether the window is focused.
+Switch away and it notices; click **Activate Focus Bypass** and it stops noticing.
+
 ## Usage
 
 ### 1. Bookmarklet – easiest
@@ -71,7 +74,7 @@ notices that you left, use the userscript.
 ## Editing
 
 After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
-`focus-bypass.bookmarklet.txt`, `index.html` and `extension/guard.js`, and copies `@version` into
+`focus-bypass.bookmarklet.txt`, `index.html`, `demo.html` and `extension/guard.js`, and copies `@version` into
 `extension/manifest.json`. Then click the reload icon on the extension's card in `chrome://extensions`. When you publish a new version, also bump
 `@version` so Tampermonkey picks up the update.
 
@@ -82,7 +85,9 @@ After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
 | `focus-bypass.user.js` | the script itself (userscript, also works pasted into the console) |
 | `focus-bypass.bookmarklet.txt` | the same script as a bookmarklet |
 | `index.html` | install page with the drag-to-bookmarks button and a copy button |
+| `demo.html` | live demo: a page that watches focus, with a button to activate the bypass |
 | `extension/` | Chrome extension (Manifest V3) with a toolbar popup; `guard.js` in it is generated |
-| `build.mjs` | builds the bookmarklet, `index.html` and `extension/guard.js` from the script |
+| `build.mjs` | builds the bookmarklet, `index.html`, `demo.html` and `extension/guard.js` from the script |
+| `build-web.mjs` | builds the hosted site (install page, demo and userscript) into a separate folder |
 
 > Hiding focus changes may be against the rules on online tests and exams.
