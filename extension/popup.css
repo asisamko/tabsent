@@ -1,0 +1,115 @@
+:root {
+  color-scheme: light dark;
+  --accent: #D97757;
+  --accent-text: #B4552F;
+  --bg: #FAF9F5;
+  --card: #FFFFFF;
+  --text: #2B2A27;
+  --muted: #77736A;
+  --border: #E5E1D6;
+  --track: #D6D2C7;
+  --tint: color-mix(in srgb, var(--accent) 11%, var(--card));
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent: #E08A6D;
+    --accent-text: #EE9F84;
+    --bg: #1C1B19;
+    --card: #262523;
+    --text: #ECE9E2;
+    --muted: #A29D93;
+    --border: #3A3834;
+    --track: #4A4741;
+    --tint: color-mix(in srgb, var(--accent) 16%, var(--card));
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  width: 320px;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+button { font: inherit; color: inherit; }
+
+header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+header img { border-radius: 6px; }
+h1 { font-size: 15px; margin: 0; line-height: 1.2; }
+header p { margin: 0; color: var(--muted); font-size: 12px; }
+
+.site {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 14px 14px 14px 16px;
+  transition: background .15s, border-color .15s;
+}
+.site.on { background: var(--tint); border-color: var(--accent); }
+.site.off-limits { opacity: .7; }
+.site-text { flex: 1; min-width: 0; }
+.host { font-size: 15px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--track); flex: none; }
+.site.on .status { color: var(--accent-text); font-weight: 600; }
+.site.on .dot { background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+
+.switch {
+  --w: 38px; --h: 22px;
+  position: relative; flex: none; width: var(--w); height: var(--h);
+  border: none; border-radius: 999px; padding: 0; cursor: pointer;
+  background: var(--track); transition: background .15s;
+}
+.switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px;
+  width: calc(var(--h) - 6px); height: calc(var(--h) - 6px); border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / .25); transition: transform .15s;
+}
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"]::after { transform: translateX(calc(var(--w) - var(--h))); }
+.switch:disabled { cursor: default; opacity: .5; }
+.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch.big { --w: 56px; --h: 32px; }
+
+.blocked { margin: 8px 2px 0; color: var(--muted); font-size: 12.5px; }
+
+.hint {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 8px; padding: 10px 10px 10px 12px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+}
+.hint p { margin: 0; flex: 1; font-size: 12.5px; }
+.btn {
+  flex: none; border: none; border-radius: 8px; padding: 6px 11px; cursor: pointer;
+  background: var(--accent); color: #fff; font-weight: 650; font-size: 12.5px;
+}
+.btn:hover { filter: brightness(1.06); }
+
+.row {
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+  margin-top: 12px; padding: 10px 12px 10px 14px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+}
+.label { font-weight: 600; }
+.sub { color: var(--muted); font-size: 12px; }
+
+.sites { margin-top: 14px; }
+.sites h2 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 2px 6px; font-weight: 650; }
+ul { list-style: none; margin: 0; padding: 0; max-height: 168px; overflow-y: auto; }
+li {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 4px 5px 10px; border-radius: 8px;
+}
+li:hover { background: var(--card); }
+li .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+li.current .name { font-weight: 650; }
+li .tag { font-size: 11px; color: var(--muted); }
+li .remove {
+  flex: none; width: 24px; height: 24px; border: none; border-radius: 6px; background: none;
+  color: var(--muted); cursor: pointer; font-size: 16px; line-height: 1;
+}
+li .remove:hover { background: var(--border); color: var(--text); }
+.empty { margin: 0 2px; color: var(--muted); font-size: 12.5px; }
+.error { margin: 10px 2px 0; color: #C0392B; font-size: 12px; }

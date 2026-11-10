@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Window Focus Bypass</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" width="24" height="24" alt="">
+    <div>
+      <h1>Focus Bypass</h1>
+      <p>Hide that you left the tab or window</p>
+    </div>
+  </header>
+
+  <section class="site" id="site">
+    <div class="site-text">
+      <div class="host" id="host">…</div>
+      <div class="status" id="status"><span class="dot"></span><span id="statusText">Checking…</span></div>
+    </div>
+    <button class="switch big" id="siteToggle" role="switch" aria-checked="false" aria-label="Protect this site" disabled></button>
+  </section>
+
+  <p class="blocked" id="blocked" hidden></p>
+
+  <div class="hint" id="hint" hidden>
+    <p id="hintText"></p>
+    <button class="btn" id="reload">Reload page</button>
+  </div>
+
+  <section class="row">
+    <div>
+      <div class="label">All sites</div>
+      <div class="sub">Protect every website you open</div>
+    </div>
+    <button class="switch" id="allToggle" role="switch" aria-checked="false" aria-label="Protect all sites"></button>
+  </section>
+
+  <section class="sites">
+    <h2>Enabled sites <span id="count"></span></h2>
+    <ul id="list"></ul>
+    <p class="empty" id="empty">No sites yet. Switch it on above for the site you’re on.</p>
+  </section>
+
+  <p class="error" id="error" hidden></p>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

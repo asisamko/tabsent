@@ -27,7 +27,21 @@ The script then runs automatically on every page, before the page's own scripts,
 To limit it to certain sites, edit the `@match` line in Tampermonkey
 (e.g. `// @match https://www.example.com/*`), or switch it off there with one click.
 
-### 3. Console – no install
+### 3. Chrome extension – per-site switch
+
+1. Download the repository ([ZIP](https://github.com/asisamko/window-focus-bypass/archive/refs/heads/main.zip)) and unzip it,
+   or `git clone` it.
+2. Open `chrome://extensions` and turn on **Developer mode** (top right).
+3. Click **Load unpacked** and pick the `extension/` folder.
+4. Pin **Window Focus Bypass** to the toolbar. On any site, click its icon and switch it on.
+
+Chrome then asks for access to that one site only. The extension asks for no site access at install
+time. Turning on **All sites** asks for access to every website. Once it is on, the extension
+starts working in the open tab right away. Reload the page once (there is a button in the popup)
+so it also runs before the page's own scripts. Tabs where it is on show an orange **ON** badge.
+Remove sites from the list in the popup.
+
+### 4. Console – no install
 
 1. On the page, open the console: <kbd>⌥</kbd><kbd>⌘</kbd><kbd>J</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>J</kbd> (Windows).
 2. Paste the content of `focus-bypass.user.js` (or copy it with the button in `index.html`) and press <kbd>Enter</kbd>.
@@ -35,11 +49,11 @@ To limit it to certain sites, edit the `@match` line in Tampermonkey
 
 ## Which one to pick
 
-| | Bookmarklet | Userscript | Console |
-|---|---|---|---|
-| Install | none | Tampermonkey | none |
-| How it starts | click on each page | automatically | paste on each page |
-| Reliability | good | best | good |
+| | Bookmarklet | Userscript | Extension | Console |
+|---|---|---|---|---|
+| Install | none | Tampermonkey | load unpacked | none |
+| How it starts | click on each page | automatically | automatically, on the sites you pick | paste on each page |
+| Reliability | good | best | best (after one reload) | good |
 
 The bookmarklet and the console run only after the page has loaded. They hide everything except
 `blur` listeners the page had already added with `addEventListener` before that. If a page still
@@ -57,7 +71,8 @@ notices that you left, use the userscript.
 ## Editing
 
 After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
-`focus-bypass.bookmarklet.txt` and `index.html`. When you publish a new version, also bump
+`focus-bypass.bookmarklet.txt`, `index.html` and `extension/guard.js`, and copies `@version` into
+`extension/manifest.json`. Then click the reload icon on the extension's card in `chrome://extensions`. When you publish a new version, also bump
 `@version` so Tampermonkey picks up the update.
 
 ## Files
@@ -67,6 +82,7 @@ After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
 | `focus-bypass.user.js` | the script itself (userscript, also works pasted into the console) |
 | `focus-bypass.bookmarklet.txt` | the same script as a bookmarklet |
 | `index.html` | install page with the drag-to-bookmarks button and a copy button |
-| `build.mjs` | builds the bookmarklet and `index.html` from the script |
+| `extension/` | Chrome extension (Manifest V3) with a toolbar popup; `guard.js` in it is generated |
+| `build.mjs` | builds the bookmarklet, `index.html` and `extension/guard.js` from the script |
 
 > Hiding focus changes may be against the rules on online tests and exams.
