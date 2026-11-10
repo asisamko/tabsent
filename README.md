@@ -32,10 +32,11 @@ To limit it to certain sites, edit the `@match` line in Tampermonkey
 
 ### 3. Chrome extension – per-site switch
 
-1. Download the repository ([ZIP](https://github.com/asisamko/window-focus-bypass/archive/refs/heads/main.zip)) and unzip it,
-   or `git clone` it.
+1. Download the extension ZIP from the
+   [latest release](https://github.com/asisamko/window-focus-bypass/releases/latest/download/window-focus-bypass-extension.zip)
+   and unzip it. (Or `git clone` the repo and use the `extension/` folder.)
 2. Open `chrome://extensions` and turn on **Developer mode** (top right).
-3. Click **Load unpacked** and pick the `extension/` folder.
+3. Click **Load unpacked** and pick the unzipped folder (the one that contains `manifest.json`).
 4. Pin **Window Focus Bypass** to the toolbar. On any site, click its icon and switch it on.
 
 Chrome then asks for access to that one site only. The extension asks for no site access at install
@@ -78,6 +79,14 @@ After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
 `extension/manifest.json`. Then click the reload icon on the extension's card in `chrome://extensions`. When you publish a new version, also bump
 `@version` so Tampermonkey picks up the update.
 
+## Releasing
+
+1. Bump `@version` in `focus-bypass.user.js`.
+2. Run `node build-extension.mjs`. It builds `dist/window-focus-bypass-extension.zip` with
+   `manifest.json` at the ZIP root.
+3. Create a GitHub release tagged `v<version>` and attach that ZIP. The install page links to
+   `releases/latest/download/window-focus-bypass-extension.zip`, so keep the asset name unchanged.
+
 ## Files
 
 | File | What it is |
@@ -88,6 +97,7 @@ After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
 | `demo.html` | live demo: a page that watches focus, with a button to activate the bypass |
 | `extension/` | Chrome extension (Manifest V3) with a toolbar popup; `guard.js` in it is generated |
 | `build.mjs` | builds the bookmarklet, `index.html`, `demo.html` and `extension/guard.js` from the script |
+| `build-extension.mjs` | builds the release ZIP of the extension into `dist/` |
 | `build-web.mjs` | builds the hosted site (install page, demo and userscript) into a separate folder |
 
 > Hiding focus changes may be against the rules on online tests and exams.
