@@ -47,9 +47,9 @@ To limit it to certain sites, edit the `@match` line in Tampermonkey
 
 Chrome then asks for access to that one site only. The extension asks for no site access at install
 time. Turning on **All sites** asks for access to every website. Once it is on, the extension
-reloads the page automatically (save any unsaved work first) so the guard also runs before the
-page's own scripts. Tabs where it is on show an orange **ON** badge. Remove sites from the list in
-the popup.
+reloads the page you are on automatically (save any unsaved work first) so the guard also runs
+before the page's own scripts. Tabs where it is on show an orange **ON** badge. Remove sites from
+the list in the popup.
 
 ### 4. Console – no install
 
