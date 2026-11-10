@@ -15,7 +15,22 @@
   a { color: var(--accent); }
   a.btn { color: #fff; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
-  .card.demo { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+  .card.demo { position: relative; overflow: hidden; color: #FAF9F5; border-color: color-mix(in srgb, var(--accent) 55%, #2B2A27); background: radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, var(--accent) 50%, transparent), transparent 58%), #2B2A27; }
+  .card.demo h2 { color: #FAF9F5; font-size: 18px; }
+  .card.demo p { color: #D3CDC2; }
+  .card.demo .tag { background: rgba(255,255,255,.12); color: #F3C4B2; }
+  .card.demo a.btn { background: #FAF9F5; color: #2B2A27; }
+  .card.demo a.btn:hover { background: #fff; }
+  .card.demo a.btn.ghost { background: transparent; color: #FAF9F5; border: 1px solid rgba(255,255,255,.28); }
+  .card.demo a.btn.ghost:hover { background: rgba(255,255,255,.08); }
+  .demo-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .live { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; color: #7FD3A2; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #4CC38A; animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(76,195,138,.55); } 70% { box-shadow: 0 0 0 7px rgba(76,195,138,0); } 100% { box-shadow: 0 0 0 0 rgba(76,195,138,0); } }
+  .demo-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .demo-chips span { font: 600 11.5px ui-monospace, Menlo, monospace; color: #D8D2C6; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 7px; padding: 4px 8px; }
+  .demo-chips b { color: #7FD3A2; }
+  @media (prefers-color-scheme: dark) { .card.demo { background: radial-gradient(130% 150% at 100% 0%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 58%), #322E2A; } }
   .card h2 { font-size: 16px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
   .tag { font-size: 11.5px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
   .card p, .card ol { margin: 6px 0; }
@@ -36,9 +51,21 @@
   <p class="lead">Stop websites from noticing that you switched to another window, tab or app. The page always thinks it is visible and focused.</p>
 
   <section class="card demo">
-    <h2>Live demo <span class="tag">see it work</span></h2>
-    <p>A page that watches whether the window is focused. Switch away and it notices — then turn the bypass on and it stops.</p>
-    <div class="row"><a class="btn" href="demo.html">Open the live demo →</a></div>
+    <div class="demo-top">
+      <span class="live"><span class="live-dot"></span>LIVE DEMO</span>
+      <span class="tag">see it work</span>
+    </div>
+    <h2>A page that watches your focus</h2>
+    <p>Switch away and it notices — then turn the bypass on and it stops. Live counter, timer and event log.</p>
+    <div class="demo-chips">
+      <span>document.hidden <b>false</b></span>
+      <span>visibilityState <b>visible</b></span>
+      <span>hasFocus() <b>true</b></span>
+    </div>
+    <div class="row">
+      <a class="btn" href="demo.html">Open the live demo →</a>
+      <a class="btn ghost" href="https://github.com/asisamko/window-focus-bypass/releases/latest/download/window-focus-bypass-extension.zip">Download extension</a>
+    </div>
   </section>
 
   <section class="card">
@@ -63,8 +90,10 @@
 
   <section class="card">
     <h2>3. Chrome extension <span class="tag">per-site switch</span></h2>
+    <p>Install the latest release directly — no repository download needed.</p>
+    <div class="row"><a class="btn" href="https://github.com/asisamko/window-focus-bypass/releases/latest/download/window-focus-bypass-extension.zip">Download extension ZIP</a><span class="muted">latest release · v1.0.0</span></div>
     <ol>
-      <li><a href="https://github.com/asisamko/window-focus-bypass/releases/latest/download/window-focus-bypass-extension.zip">Download the extension ZIP</a> (latest release) and unzip it.</li>
+      <li>Unzip the download.</li>
       <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
       <li>Click <b>Load unpacked</b> and pick the unzipped folder (the one with <code>manifest.json</code>).</li>
     </ol>
