@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Window Focus Bypass",
-  "short_name": "Focus Bypass",
-  "version": "1.0.0",
+  "name": "TabSent",
+  "short_name": "TabSent",
+  "version": "1.1.0",
   "description": "Stop websites from noticing that you switched to another window or tab. Switch it on per site from the toolbar.",
-  "homepage_url": "https://github.com/asisamko/window-focus-bypass",
+  "homepage_url": "https://github.com/asisamko/tabsent",
   "minimum_chrome_version": "111",
   "icons": {
     "16": "icons/icon16.png",
@@ -13,7 +13,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Window Focus Bypass",
+    "default_title": "TabSent",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",

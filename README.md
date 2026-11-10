@@ -1,12 +1,15 @@
-# Window Focus Bypass
+# TabSent
 
 Stop websites from noticing that you switched to another window, tab or app.
 The page always thinks it is visible and focused.
 
+TabSent was previously called **Window Focus Bypass**; the script files keep their old names so
+existing userscript installs keep updating.
+
 **Quickest start:** open [`index.html`](index.html) (double-click the file) and follow the steps there.
 
 **See it work:** open [`demo.html`](demo.html) — a page that watches whether the window is focused.
-Switch away and it notices; click **Activate Focus Bypass** and it stops noticing.
+Switch away and it notices; click **Activate TabSent** and it stops noticing.
 
 ## Usage
 
@@ -14,7 +17,7 @@ Switch away and it notices; click **Activate Focus Bypass** and it stops noticin
 
 1. Open `index.html` in Chrome.
 2. Show the bookmarks bar: <kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd> (Windows).
-3. Drag the **🙈 Focus Bypass** button onto the bookmarks bar.
+3. Drag the **🙈 TabSent** button onto the bookmarks bar.
 4. On the page where you want it, click the bookmark. It stays active until you reload the page.
 
 You can also create the bookmark by hand: add a new bookmark and paste the whole content of
@@ -23,7 +26,7 @@ You can also create the bookmark by hand: add a new bookmark and paste the whole
 ### 2. Userscript – most reliable
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/) or [Violentmonkey](https://violentmonkey.github.io/).
-2. Open [focus-bypass.user.js (raw)](https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js)
+2. Open [focus-bypass.user.js (raw)](https://raw.githubusercontent.com/asisamko/tabsent/main/focus-bypass.user.js)
    and confirm **Install**.
 
 The script then runs automatically on every page, before the page's own scripts, and updates itself.
@@ -33,11 +36,11 @@ To limit it to certain sites, edit the `@match` line in Tampermonkey
 ### 3. Chrome extension – per-site switch
 
 1. Download the extension ZIP from the
-   [latest release](https://github.com/asisamko/window-focus-bypass/releases/latest/download/window-focus-bypass-extension.zip)
+   [latest release](https://github.com/asisamko/tabsent/releases/latest/download/tabsent-extension.zip)
    and unzip it. (Or `git clone` the repo and use the `extension/` folder.)
 2. Open `chrome://extensions` and turn on **Developer mode** (top right).
 3. Click **Load unpacked** and pick the unzipped folder (the one that contains `manifest.json`).
-4. Pin **Window Focus Bypass** to the toolbar. On any site, click its icon and switch it on.
+4. Pin **TabSent** to the toolbar. On any site, click its icon and switch it on.
 
 Chrome then asks for access to that one site only. The extension asks for no site access at install
 time. Turning on **All sites** asks for access to every website. Once it is on, the extension
@@ -82,10 +85,10 @@ After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
 ## Releasing
 
 1. Bump `@version` in `focus-bypass.user.js`.
-2. Run `node build-extension.mjs`. It builds `dist/window-focus-bypass-extension.zip` with
+2. Run `node build-extension.mjs`. It builds `dist/tabsent-extension.zip` with
    `manifest.json` at the ZIP root.
 3. Create a GitHub release tagged `v<version>` and attach that ZIP. The install page links to
-   `releases/latest/download/window-focus-bypass-extension.zip`, so keep the asset name unchanged.
+   `releases/latest/download/tabsent-extension.zip`, so keep the asset name unchanged.
 
 ## Files
 
@@ -95,9 +98,12 @@ After changing `focus-bypass.user.js`, run `node build.mjs`. It regenerates
 | `focus-bypass.bookmarklet.txt` | the same script as a bookmarklet |
 | `index.html` | install page with the drag-to-bookmarks button and a copy button |
 | `demo.html` | live demo: a page that watches focus, with a button to activate the bypass |
+| `og-image.png` | 1200×630 social preview image (source: `og-image.svg`) |
 | `extension/` | Chrome extension (Manifest V3) with a toolbar popup; `guard.js` in it is generated |
 | `build.mjs` | builds the bookmarklet, `index.html`, `demo.html` and `extension/guard.js` from the script |
 | `build-extension.mjs` | builds the release ZIP of the extension into `dist/` |
-| `build-web.mjs` | builds the hosted site (install page, demo and userscript) into a separate folder |
+| `build-web.mjs` | builds the hosted site (install page, demo, userscript and OG image) into a separate folder |
 
 > Hiding focus changes may be against the rules on online tests and exams.
+
+Made by [oryks.org](https://oryks.org).

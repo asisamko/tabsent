@@ -61,7 +61,7 @@ async function guardPresent(tabId) {
     const [r] = await chrome.scripting.executeScript({
       target: { tabId },
       world: 'MAIN',
-      func: () => Boolean(window[Symbol.for('windowFocusBypass')]),
+      func: () => Boolean(window[Symbol.for('tabSent')]),
     });
     return r?.result === true;
   } catch {

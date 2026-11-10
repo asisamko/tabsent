@@ -1,5 +1,5 @@
-// Builds the hosted site (install page + userscript + bookmarklet) into a separate folder,
-// by default ../window-focus-bypass-web – a private repo that Vercel deploys.
+// Builds the hosted site (install page, demo, userscript, bookmarklet and OG image) into a separate
+// folder, by default ../window-focus-bypass-web – a private repo that Vercel deploys.
 //
 //   node build-web.mjs                                   # userscript updates keep coming from GitHub
 //   node build-web.mjs https://bypass.example.com        # userscript updates come from your domain
@@ -40,22 +40,29 @@ fs.copyFileSync(path.join(dir, 'focus-bypass.bookmarklet.txt'), path.join(out, '
 // Demo page: self-contained (the guard is inlined), just point its links back at the site root.
 let demo = fs.readFileSync(path.join(dir, 'demo.html'), 'utf8');
 demo = demo.replaceAll('href="index.html"', 'href="/"');
+if (site) {
+  demo = demo.replaceAll(
+    'https://raw.githubusercontent.com/asisamko/tabsent/main/og-image.png',
+    `${site}/og-image.png`
+  );
+}
 fs.writeFileSync(path.join(out, 'demo.html'), demo);
+fs.copyFileSync(path.join(dir, 'og-image.png'), path.join(out, 'og-image.png'));
 
-// Install page: install from this site instead of GitHub, plus favicon and share meta tags.
-const description = 'Stop websites from noticing that you switched to another window, tab or app.';
+// Install page: install from this site instead of GitHub, plus favicon and site-specific share tags.
 let html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
 html = html.replace(/href="https:\/\/raw\.githubusercontent\.com\/[^"]*focus-bypass\.user\.js"/g, 'href="/focus-bypass.user.js"');
+if (site) {
+  html = html.replaceAll(
+    'https://raw.githubusercontent.com/asisamko/tabsent/main/og-image.png',
+    `${site}/og-image.png`
+  );
+}
 const meta = [
-  `<meta name="description" content="${description}">`,
-  '<meta name="theme-color" content="#D97757">',
   '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
-  '<meta property="og:title" content="Window Focus Bypass">',
-  `<meta property="og:description" content="${description}">`,
-  '<meta property="og:type" content="website">',
   ...(site ? [`<meta property="og:url" content="${site}/">`, `<link rel="canonical" href="${site}/">`] : []),
 ].join('\n');
-html = html.replace('<title>Window Focus Bypass</title>', `<title>Window Focus Bypass</title>\n${meta}`);
+html = html.replace('</title>', `</title>\n${meta}`);
 fs.writeFileSync(path.join(out, 'index.html'), html);
 
 fs.writeFileSync(

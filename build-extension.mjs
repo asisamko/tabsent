@@ -1,6 +1,6 @@
 // Builds the Chrome extension ZIP that is attached to a GitHub release.
 //   node build-extension.mjs
-// Output: dist/window-focus-bypass-extension.zip with manifest.json at the ZIP root.
+// Output: dist/tabsent-extension.zip with manifest.json at the ZIP root.
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const extension = path.join(dir, 'extension');
 const outDir = path.join(dir, 'dist');
-const out = path.join(outDir, 'window-focus-bypass-extension.zip');
+const out = path.join(outDir, 'tabsent-extension.zip');
 
 // Keep guard.js and the manifest version in sync with focus-bypass.user.js.
 execFileSync(process.execPath, [path.join(dir, 'build.mjs')], { stdio: 'inherit' });

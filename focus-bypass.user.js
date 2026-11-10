@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         Window Focus Bypass
-// @namespace    https://github.com/asisamko/window-focus-bypass
-// @version      1.0.0
+// @name         TabSent
+// @namespace    https://github.com/asisamko/tabsent
+// @version      1.1.0
 // @description  Stop websites from noticing that you switched to another window or tab (blur / visibilitychange / hasFocus).
-// @homepageURL  https://github.com/asisamko/window-focus-bypass
-// @downloadURL  https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js
-// @updateURL    https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js
+// @homepageURL  https://github.com/asisamko/tabsent
+// @downloadURL  https://raw.githubusercontent.com/asisamko/tabsent/main/focus-bypass.user.js
+// @updateURL    https://raw.githubusercontent.com/asisamko/tabsent/main/focus-bypass.user.js
 // @match        *://*/*
 // @run-at       document-start
 // @grant        none
@@ -14,7 +14,7 @@
 
 // How to use: see README.md (userscript, bookmarklet or console).
 (() => {
-  const FLAG = Symbol.for('windowFocusBypass');
+  const FLAG = Symbol.for('tabSent');
   if (window[FLAG]) return;
   Object.defineProperty(window, FLAG, { value: true });
 
@@ -77,5 +77,5 @@
     muteHandler(window, prop);
     muteHandler(document, prop);
   }
-  if (document.readyState !== 'loading') console.info('Window Focus Bypass: focus changes are now hidden from this page.');
+  if (document.readyState !== 'loading') console.info('TabSent: focus changes are now hidden from this page.');
 })();

@@ -9,7 +9,7 @@ chrome.action.setBadgeBackgroundColor({ color: ACCENT });
 chrome.action.setBadgeTextColor?.({ color: '#FFFFFF' });
 
 let chain = Promise.resolve();
-const serial = (fn) => (chain = chain.then(fn).catch((e) => console.warn('Focus Bypass:', e?.message ?? e)));
+const serial = (fn) => (chain = chain.then(fn).catch((e) => console.warn('TabSent:', e?.message ?? e)));
 
 /** Register guard.js at document_start in every frame of the enabled sites, in the page's own world. */
 function syncScripts() {
@@ -37,7 +37,7 @@ async function updateBadge(tab, settings) {
   const on = isGuarded(host, settings ?? (await getSettings()));
   await chrome.action.setBadgeText({ tabId: tab.id, text: on ? 'ON' : '' }).catch(() => {});
   await chrome.action
-    .setTitle({ tabId: tab.id, title: on ? `Window Focus Bypass – on for ${host}` : 'Window Focus Bypass' })
+    .setTitle({ tabId: tab.id, title: on ? `TabSent – on for ${host}` : 'TabSent' })
     .catch(() => {});
 }
 

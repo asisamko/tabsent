@@ -30,14 +30,28 @@ if (version && manifest.version !== version) {
 }
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const RAW = 'https://raw.githubusercontent.com/asisamko/window-focus-bypass/main/focus-bypass.user.js';
+const RAW = 'https://raw.githubusercontent.com/asisamko/tabsent/main/focus-bypass.user.js';
 
 const html = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Window Focus Bypass</title>
+<title>TabSent — keep any page focused</title>
+<meta name="description" content="TabSent hides blur, visibilitychange and hasFocus from websites — the page never notices when you switch away.">
+<meta name="theme-color" content="#D97757">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TabSent">
+<meta property="og:title" content="TabSent — keep any page focused">
+<meta property="og:description" content="Stop websites from noticing that you switched to another window or tab. The page always thinks it is visible and focused.">
+<meta property="og:image" content="https://raw.githubusercontent.com/asisamko/tabsent/main/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="TabSent — keep any page focused">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TabSent — keep any page focused">
+<meta name="twitter:description" content="Stop websites from noticing that you switched to another window or tab. The page always thinks it is visible and focused.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/asisamko/tabsent/main/og-image.png">
 <style>
   :root { color-scheme: light dark; --accent: #D97757; --bg: #FAF9F5; --card: #fff; --text: #2B2A27; --muted: #77736A; --border: #E5E1D6; }
   @media (prefers-color-scheme: dark) { :root { --bg: #1C1B19; --card: #262523; --text: #ECE9E2; --muted: #A29D93; --border: #3A3834; --accent: #E08A6D; } }
@@ -77,11 +91,14 @@ const html = `<!doctype html>
   kbd { font: 600 12px ui-monospace, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; }
   textarea { position: absolute; left: -9999px; }
   #ok { color: #2E7D4F; font-size: 14px; }
+  .credit { text-align: center; color: var(--muted); font-size: 13px; margin: 28px 0 0; }
+  .credit a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+  .credit a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
 <main>
-  <h1>Window Focus Bypass</h1>
+  <h1>TabSent</h1>
   <p class="lead">Stop websites from noticing that you switched to another window, tab or app. The page always thinks it is visible and focused.</p>
 
   <section class="card demo">
@@ -98,7 +115,7 @@ const html = `<!doctype html>
     </div>
     <div class="row">
       <a class="btn" href="demo.html">Open the live demo →</a>
-      <a class="btn ghost" href="https://github.com/asisamko/window-focus-bypass/releases/latest/download/window-focus-bypass-extension.zip">Download extension</a>
+      <a class="btn ghost" href="https://github.com/asisamko/tabsent/releases/latest/download/tabsent-extension.zip">Download extension</a>
     </div>
   </section>
 
@@ -108,7 +125,7 @@ const html = `<!doctype html>
       <li>Show the bookmarks bar: <kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd> (Windows).</li>
       <li>Drag this button onto the bookmarks bar:</li>
     </ol>
-    <div class="row"><a class="btn drag" href="${esc(bookmarklet)}" onclick="event.preventDefault(); alert('Don\\'t click it – drag it onto your bookmarks bar.')">🙈 Focus Bypass</a></div>
+    <div class="row"><a class="btn drag" href="${esc(bookmarklet)}" onclick="event.preventDefault(); alert('Don\\'t click it – drag it onto your bookmarks bar.')">🙈 TabSent</a></div>
     <p class="muted">Then click the bookmark on the page where you want it. It stays active until you reload the page. Works almost everywhere; a few pages start watching focus before you can click the bookmark – use the userscript there.</p>
   </section>
 
@@ -125,7 +142,7 @@ const html = `<!doctype html>
   <section class="card">
     <h2>3. Chrome extension <span class="tag">per-site switch</span></h2>
     <p>Install the latest release directly — no repository download needed.</p>
-    <div class="row"><a class="btn" href="https://github.com/asisamko/window-focus-bypass/releases/latest/download/window-focus-bypass-extension.zip">Download extension ZIP</a><span class="muted">latest release · v${manifest.version}</span></div>
+    <div class="row"><a class="btn" href="https://github.com/asisamko/tabsent/releases/latest/download/tabsent-extension.zip">Download extension ZIP</a><span class="muted">latest release · v${manifest.version}</span></div>
     <ol>
       <li>Unzip the download.</li>
       <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
@@ -144,6 +161,7 @@ const html = `<!doctype html>
     <div class="row"><button class="btn ghost" id="copy">Copy script</button><span id="ok" hidden>Copied ✓</span></div>
     <textarea id="code" readonly>${esc(code)}</textarea>
   </section>
+  <footer class="credit">Built by <a href="https://oryks.org" target="_blank" rel="noopener">oryks.org</a></footer>
 </main>
 <script>
   document.getElementById('copy').addEventListener('click', async () => {
@@ -164,7 +182,21 @@ const demo = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Live demo — Window Focus Bypass</title>
+<title>Live demo — TabSent</title>
+<meta name="description" content="Watch a page notice when you switch away, then turn TabSent on and it stops.">
+<meta name="theme-color" content="#D97757">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TabSent">
+<meta property="og:title" content="TabSent live demo — a page that watches focus">
+<meta property="og:description" content="Watch a page notice when you switch away, then turn TabSent on and it stops.">
+<meta property="og:image" content="https://raw.githubusercontent.com/asisamko/tabsent/main/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="TabSent — keep any page focused">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TabSent live demo — a page that watches focus">
+<meta name="twitter:description" content="Watch a page notice when you switch away, then turn TabSent on and it stops.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/asisamko/tabsent/main/og-image.png">
 <style>
   :root { color-scheme: light dark; --accent: #D97757; --bg: #FAF9F5; --card: #fff; --text: #2B2A27; --muted: #77736A; --border: #E5E1D6; --good: #2E7D4F; --bad: #B3402A; --warn: #9A6B1F; }
   @media (prefers-color-scheme: dark) { :root { --bg: #1C1B19; --card: #262523; --text: #ECE9E2; --muted: #A29D93; --border: #3A3834; --accent: #E08A6D; --good: #7FD3A2; --bad: #F0A08C; --warn: #E2BD7A; } }
@@ -207,11 +239,14 @@ const demo = `<!doctype html>
   .log li.bad { color: var(--bad); }
   .log li.good { color: var(--good); }
   .log li.warn { color: var(--warn); }
+  .credit { text-align: center; color: var(--muted); font-size: 13px; margin: 28px 0 0; }
+  .credit a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+  .credit a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
 <main>
-  <p class="back"><a href="index.html">← Window Focus Bypass</a></p>
+  <p class="back"><a href="index.html">← TabSent</a></p>
   <h1>Live demo</h1>
   <p class="lead">This page watches whether the window is focused. Activate the bypass and it stops noticing when you leave.</p>
 
@@ -226,7 +261,7 @@ const demo = `<!doctype html>
       <div class="stat"><span class="num" id="timer">0:00</span><span class="label">time counted as focused</span></div>
     </div>
     <div class="row">
-      <button class="btn" id="activate">Activate Focus Bypass</button>
+      <button class="btn" id="activate">Activate TabSent</button>
       <button class="btn ghost" id="reload">Reload demo</button>
     </div>
     <p class="muted" id="hint">Switch to another tab or app for a few seconds, then come back. Watch the counter and the timer.</p>
@@ -252,11 +287,12 @@ const demo = `<!doctype html>
     <h2>Try it</h2>
     <ol>
       <li>Leave this tab or switch to another app for a few seconds. The counter goes up and the timer pauses.</li>
-      <li>Click <b>Activate Focus Bypass</b>.</li>
+      <li>Click <b>Activate TabSent</b>.</li>
       <li>Leave again and come back. The counter stays put, the timer keeps counting, and the status never changes.</li>
     </ol>
     <p class="muted">The bypass lasts until you reload the page. In real use, install the <a href="index.html">userscript or extension</a> so it runs before the page's own scripts.</p>
   </section>
+  <footer class="credit">Built by <a href="https://oryks.org" target="_blank" rel="noopener">oryks.org</a></footer>
 </main>
 
 <script type="text/plain" id="bypass-src">${code.replace(/<\/script/gi, '<\\/script')}</script>
@@ -392,7 +428,7 @@ const demo = `<!doctype html>
     badge.hidden = false;
     hint.textContent = 'Now switch to another tab or app for a few seconds, then come back. The page will not notice.';
     setBelieved(true, 'bypass');
-    log('bypass activated — focus changes are hidden', 'good');
+    log('TabSent activated — focus changes are hidden', 'good');
     render();
   });
 
