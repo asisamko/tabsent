@@ -17,7 +17,7 @@ Switch away and it notices; click **Activate TabSent** and it stops noticing.
 
 1. Open `index.html` in Chrome.
 2. Show the bookmarks bar: <kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd> (Windows).
-3. Drag the **🙈 TabSent** button onto the bookmarks bar.
+3. Drag the **🙈 Drag to bookmarks bar** button onto the bookmarks bar.
 4. On the page where you want it, click the bookmark. It stays active until you reload the page.
 
 You can also create the bookmark by hand: add a new bookmark and paste the whole content of

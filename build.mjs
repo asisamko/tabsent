@@ -125,7 +125,7 @@ const html = `<!doctype html>
       <li>Show the bookmarks bar: <kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd> (Windows).</li>
       <li>Drag this button onto the bookmarks bar:</li>
     </ol>
-    <div class="row"><a class="btn drag" href="${esc(bookmarklet)}" onclick="event.preventDefault(); alert('Don\\'t click it – drag it onto your bookmarks bar.')">🙈 TabSent</a></div>
+    <div class="row"><a class="btn drag" href="${esc(bookmarklet)}" onclick="event.preventDefault(); alert('Don\\'t click it – drag it onto your bookmarks bar.')">🙈 Drag to bookmarks bar</a></div>
     <p class="muted">Then click the bookmark on the page where you want it. It stays active until you reload the page. Works almost everywhere; a few pages start watching focus before you can click the bookmark – use the userscript there.</p>
   </section>
 
