@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TabSent",
   "short_name": "TabSent",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Stop websites from noticing that you switched to another window or tab. Switch it on per site from the toolbar.",
   "homepage_url": "https://github.com/asisamko/tabsent",
   "minimum_chrome_version": "111",

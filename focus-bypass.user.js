@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         TabSent
 // @namespace    https://github.com/asisamko/tabsent
-// @version      1.1.1
-// @description  Stop websites from noticing that you switched to another window or tab (blur / visibilitychange / hasFocus).
+// @version      1.1.2
+// @description  Stop websites from noticing that you switched to another window or tab (blur / focus / visibilitychange / hasFocus).
 // @homepageURL  https://github.com/asisamko/tabsent
 // @downloadURL  https://raw.githubusercontent.com/asisamko/tabsent/main/focus-bypass.user.js
 // @updateURL    https://raw.githubusercontent.com/asisamko/tabsent/main/focus-bypass.user.js
@@ -17,6 +17,11 @@
   const FLAG = Symbol.for('tabSent');
   if (window[FLAG]) return;
   Object.defineProperty(window, FLAG, { value: true });
+
+  // Read the real state before overriding it: a page that starts in a background tab
+  // should not see the focus event when the user first opens that tab either.
+  const startedHidden = document.hidden;
+  const nativeHidden = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden')?.get;
 
   const getter = (proto, prop, value) => {
     try {
@@ -50,12 +55,54 @@
     }
   };
 
+  // After a real blur, the browser fires focus/focusin again when the user comes back.
+  // Hide those too, including the focus restored to the element that was active before.
+  let returning = startedHidden;
+  let returnTimer = 0;
+  const finishReturning = () => {
+    clearTimeout(returnTimer);
+    returnTimer = setTimeout(() => {
+      returning = false;
+    }, 500);
+  };
+  const clearReturning = () => {
+    returning = false;
+    clearTimeout(returnTimer);
+  };
+
   const stop = (e) => {
-    if (isPageLevel(e.target) || windowLostFocus()) e.stopImmediatePropagation();
+    if (isPageLevel(e.target) || windowLostFocus()) {
+      clearTimeout(returnTimer);
+      returning = true;
+      e.stopImmediatePropagation();
+    }
   };
   for (const type of ['blur', 'focusout']) window.addEventListener(type, stop, true);
 
-  const stopVisibility = (e) => e.stopImmediatePropagation();
+  const stopFocus = (e) => {
+    if (!returning) return;
+    finishReturning();
+    e.stopImmediatePropagation();
+  };
+  for (const type of ['focus', 'focusin']) window.addEventListener(type, stopFocus, true);
+
+  // A real click or key press ends the "just came back" window, so focusing a field still works.
+  for (const type of ['pointerdown', 'mousedown', 'keydown', 'touchstart']) {
+    window.addEventListener(type, clearReturning, true);
+  }
+
+  const stopVisibility = (e) => {
+    try {
+      // The native getter still knows the truth even though document.hidden is overridden.
+      if (nativeHidden?.call(document)) {
+        clearTimeout(returnTimer);
+        returning = true;
+      }
+    } catch {
+      /* ignore */
+    }
+    e.stopImmediatePropagation();
+  };
   for (const type of ['visibilitychange', 'webkitvisibilitychange']) window.addEventListener(type, stopVisibility, true);
 
   const stopLeave = (e) => {
@@ -73,7 +120,7 @@
       /* ignore */
     }
   };
-  for (const prop of ['onblur', 'onfocusout', 'onvisibilitychange', 'onmouseleave', 'onmouseout']) {
+  for (const prop of ['onblur', 'onfocusout', 'onfocus', 'onfocusin', 'onvisibilitychange', 'onmouseleave', 'onmouseout']) {
     muteHandler(window, prop);
     muteHandler(document, prop);
   }

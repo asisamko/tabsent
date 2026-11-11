@@ -38,7 +38,7 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TabSent — keep any page focused</title>
-<meta name="description" content="TabSent hides blur, visibilitychange and hasFocus from websites — the page never notices when you switch away.">
+<meta name="description" content="TabSent hides blur, focus, visibilitychange and hasFocus from websites — the page never notices when you switch away.">
 <meta name="theme-color" content="#D97757">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TabSent">

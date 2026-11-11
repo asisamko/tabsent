@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TabSent — keep any page focused</title>
-<meta name="description" content="TabSent hides blur, visibilitychange and hasFocus from websites — the page never notices when you switch away.">
+<meta name="description" content="TabSent hides blur, focus, visibilitychange and hasFocus from websites — the page never notices when you switch away.">
 <meta name="theme-color" content="#D97757">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TabSent">
@@ -94,7 +94,7 @@
       <li>Show the bookmarks bar: <kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd> (Windows).</li>
       <li>Drag this button onto the bookmarks bar:</li>
     </ol>
-    <div class="row"><a class="btn drag" href="javascript:(()%20%3D%3E%20%7B%20const%20FLAG%20%3D%20Symbol.for('tabSent')%3B%20if%20(window%5BFLAG%5D)%20return%3B%20Object.defineProperty(window%2C%20FLAG%2C%20%7B%20value%3A%20true%20%7D)%3B%20const%20getter%20%3D%20(proto%2C%20prop%2C%20value)%20%3D%3E%20%7B%20try%20%7B%20Object.defineProperty(proto%2C%20prop%2C%20%7B%20configurable%3A%20true%2C%20enumerable%3A%20true%2C%20get%3A%20()%20%3D%3E%20value%20%7D)%3B%20%7D%20catch%20%7B%20%7D%20%7D%3B%20getter(Document.prototype%2C%20'hidden'%2C%20false)%3B%20getter(Document.prototype%2C%20'webkitHidden'%2C%20false)%3B%20getter(Document.prototype%2C%20'visibilityState'%2C%20'visible')%3B%20getter(Document.prototype%2C%20'webkitVisibilityState'%2C%20'visible')%3B%20const%20realHasFocus%20%3D%20Document.prototype.hasFocus%3B%20try%20%7B%20Document.prototype.hasFocus%20%3D%20function%20hasFocus()%20%7B%20return%20true%3B%20%7D%3B%20%7D%20catch%20%7B%20%7D%20const%20isPageLevel%20%3D%20(t)%20%3D%3E%20t%20%3D%3D%3D%20window%20%7C%7C%20t%20%3D%3D%3D%20document%20%7C%7C%20t%20%3D%3D%3D%20document.documentElement%20%7C%7C%20t%20%3D%3D%3D%20document.body%3B%20const%20windowLostFocus%20%3D%20()%20%3D%3E%20%7B%20try%20%7B%20return%20!realHasFocus.call(document)%3B%20%7D%20catch%20%7B%20return%20false%3B%20%7D%20%7D%3B%20const%20stop%20%3D%20(e)%20%3D%3E%20%7B%20if%20(isPageLevel(e.target)%20%7C%7C%20windowLostFocus())%20e.stopImmediatePropagation()%3B%20%7D%3B%20for%20(const%20type%20of%20%5B'blur'%2C%20'focusout'%5D)%20window.addEventListener(type%2C%20stop%2C%20true)%3B%20const%20stopVisibility%20%3D%20(e)%20%3D%3E%20e.stopImmediatePropagation()%3B%20for%20(const%20type%20of%20%5B'visibilitychange'%2C%20'webkitvisibilitychange'%5D)%20window.addEventListener(type%2C%20stopVisibility%2C%20true)%3B%20const%20stopLeave%20%3D%20(e)%20%3D%3E%20%7B%20if%20(!e.relatedTarget%20%26%26%20isPageLevel(e.target))%20e.stopImmediatePropagation()%3B%20%7D%3B%20for%20(const%20type%20of%20%5B'mouseleave'%2C%20'mouseout'%2C%20'pointerleave'%2C%20'pointerout'%5D)%20window.addEventListener(type%2C%20stopLeave%2C%20true)%3B%20const%20muteHandler%20%3D%20(obj%2C%20prop)%20%3D%3E%20%7B%20try%20%7B%20obj%5Bprop%5D%20%3D%20null%3B%20Object.defineProperty(obj%2C%20prop%2C%20%7B%20configurable%3A%20true%2C%20get%3A%20()%20%3D%3E%20null%2C%20set%3A%20()%20%3D%3E%20%7B%7D%20%7D)%3B%20%7D%20catch%20%7B%20%7D%20%7D%3B%20for%20(const%20prop%20of%20%5B'onblur'%2C%20'onfocusout'%2C%20'onvisibilitychange'%2C%20'onmouseleave'%2C%20'onmouseout'%5D)%20%7B%20muteHandler(window%2C%20prop)%3B%20muteHandler(document%2C%20prop)%3B%20%7D%20if%20(document.readyState%20!%3D%3D%20'loading')%20console.info('TabSent%3A%20focus%20changes%20are%20now%20hidden%20from%20this%20page.')%3B%20%7D)()%3Bvoid 0" onclick="event.preventDefault(); alert('Don\'t click it – drag it onto your bookmarks bar.')">🙈 Drag to bookmarks bar</a></div>
+    <div class="row"><a class="btn drag" href="javascript:(()%20%3D%3E%20%7B%20const%20FLAG%20%3D%20Symbol.for('tabSent')%3B%20if%20(window%5BFLAG%5D)%20return%3B%20Object.defineProperty(window%2C%20FLAG%2C%20%7B%20value%3A%20true%20%7D)%3B%20const%20startedHidden%20%3D%20document.hidden%3B%20const%20nativeHidden%20%3D%20Object.getOwnPropertyDescriptor(Document.prototype%2C%20'hidden')%3F.get%3B%20const%20getter%20%3D%20(proto%2C%20prop%2C%20value)%20%3D%3E%20%7B%20try%20%7B%20Object.defineProperty(proto%2C%20prop%2C%20%7B%20configurable%3A%20true%2C%20enumerable%3A%20true%2C%20get%3A%20()%20%3D%3E%20value%20%7D)%3B%20%7D%20catch%20%7B%20%7D%20%7D%3B%20getter(Document.prototype%2C%20'hidden'%2C%20false)%3B%20getter(Document.prototype%2C%20'webkitHidden'%2C%20false)%3B%20getter(Document.prototype%2C%20'visibilityState'%2C%20'visible')%3B%20getter(Document.prototype%2C%20'webkitVisibilityState'%2C%20'visible')%3B%20const%20realHasFocus%20%3D%20Document.prototype.hasFocus%3B%20try%20%7B%20Document.prototype.hasFocus%20%3D%20function%20hasFocus()%20%7B%20return%20true%3B%20%7D%3B%20%7D%20catch%20%7B%20%7D%20const%20isPageLevel%20%3D%20(t)%20%3D%3E%20t%20%3D%3D%3D%20window%20%7C%7C%20t%20%3D%3D%3D%20document%20%7C%7C%20t%20%3D%3D%3D%20document.documentElement%20%7C%7C%20t%20%3D%3D%3D%20document.body%3B%20const%20windowLostFocus%20%3D%20()%20%3D%3E%20%7B%20try%20%7B%20return%20!realHasFocus.call(document)%3B%20%7D%20catch%20%7B%20return%20false%3B%20%7D%20%7D%3B%20let%20returning%20%3D%20startedHidden%3B%20let%20returnTimer%20%3D%200%3B%20const%20finishReturning%20%3D%20()%20%3D%3E%20%7B%20clearTimeout(returnTimer)%3B%20returnTimer%20%3D%20setTimeout(()%20%3D%3E%20%7B%20returning%20%3D%20false%3B%20%7D%2C%20500)%3B%20%7D%3B%20const%20clearReturning%20%3D%20()%20%3D%3E%20%7B%20returning%20%3D%20false%3B%20clearTimeout(returnTimer)%3B%20%7D%3B%20const%20stop%20%3D%20(e)%20%3D%3E%20%7B%20if%20(isPageLevel(e.target)%20%7C%7C%20windowLostFocus())%20%7B%20clearTimeout(returnTimer)%3B%20returning%20%3D%20true%3B%20e.stopImmediatePropagation()%3B%20%7D%20%7D%3B%20for%20(const%20type%20of%20%5B'blur'%2C%20'focusout'%5D)%20window.addEventListener(type%2C%20stop%2C%20true)%3B%20const%20stopFocus%20%3D%20(e)%20%3D%3E%20%7B%20if%20(!returning)%20return%3B%20finishReturning()%3B%20e.stopImmediatePropagation()%3B%20%7D%3B%20for%20(const%20type%20of%20%5B'focus'%2C%20'focusin'%5D)%20window.addEventListener(type%2C%20stopFocus%2C%20true)%3B%20for%20(const%20type%20of%20%5B'pointerdown'%2C%20'mousedown'%2C%20'keydown'%2C%20'touchstart'%5D)%20%7B%20window.addEventListener(type%2C%20clearReturning%2C%20true)%3B%20%7D%20const%20stopVisibility%20%3D%20(e)%20%3D%3E%20%7B%20try%20%7B%20if%20(nativeHidden%3F.call(document))%20%7B%20clearTimeout(returnTimer)%3B%20returning%20%3D%20true%3B%20%7D%20%7D%20catch%20%7B%20%7D%20e.stopImmediatePropagation()%3B%20%7D%3B%20for%20(const%20type%20of%20%5B'visibilitychange'%2C%20'webkitvisibilitychange'%5D)%20window.addEventListener(type%2C%20stopVisibility%2C%20true)%3B%20const%20stopLeave%20%3D%20(e)%20%3D%3E%20%7B%20if%20(!e.relatedTarget%20%26%26%20isPageLevel(e.target))%20e.stopImmediatePropagation()%3B%20%7D%3B%20for%20(const%20type%20of%20%5B'mouseleave'%2C%20'mouseout'%2C%20'pointerleave'%2C%20'pointerout'%5D)%20window.addEventListener(type%2C%20stopLeave%2C%20true)%3B%20const%20muteHandler%20%3D%20(obj%2C%20prop)%20%3D%3E%20%7B%20try%20%7B%20obj%5Bprop%5D%20%3D%20null%3B%20Object.defineProperty(obj%2C%20prop%2C%20%7B%20configurable%3A%20true%2C%20get%3A%20()%20%3D%3E%20null%2C%20set%3A%20()%20%3D%3E%20%7B%7D%20%7D)%3B%20%7D%20catch%20%7B%20%7D%20%7D%3B%20for%20(const%20prop%20of%20%5B'onblur'%2C%20'onfocusout'%2C%20'onfocus'%2C%20'onfocusin'%2C%20'onvisibilitychange'%2C%20'onmouseleave'%2C%20'onmouseout'%5D)%20%7B%20muteHandler(window%2C%20prop)%3B%20muteHandler(document%2C%20prop)%3B%20%7D%20if%20(document.readyState%20!%3D%3D%20'loading')%20console.info('TabSent%3A%20focus%20changes%20are%20now%20hidden%20from%20this%20page.')%3B%20%7D)()%3Bvoid 0" onclick="event.preventDefault(); alert('Don\'t click it – drag it onto your bookmarks bar.')">🙈 Drag to bookmarks bar</a></div>
     <p class="muted">Then click the bookmark on the page where you want it. It stays active until you reload the page. Works almost everywhere; a few pages start watching focus before you can click the bookmark – use the userscript there.</p>
   </section>
 
@@ -111,7 +111,7 @@
   <section class="card">
     <h2>3. Chrome extension <span class="tag">per-site switch</span></h2>
     <p>Install the latest release directly — no repository download needed.</p>
-    <div class="row"><a class="btn" href="https://github.com/asisamko/tabsent/releases/latest/download/tabsent-extension.zip">Download extension ZIP</a><span class="muted">latest release · v1.1.1</span></div>
+    <div class="row"><a class="btn" href="https://github.com/asisamko/tabsent/releases/latest/download/tabsent-extension.zip">Download extension ZIP</a><span class="muted">latest release · v1.1.2</span></div>
     <ol>
       <li>Unzip the download.</li>
       <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
@@ -135,6 +135,11 @@
   const FLAG = Symbol.for('tabSent');
   if (window[FLAG]) return;
   Object.defineProperty(window, FLAG, { value: true });
+
+  // Read the real state before overriding it: a page that starts in a background tab
+  // should not see the focus event when the user first opens that tab either.
+  const startedHidden = document.hidden;
+  const nativeHidden = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden')?.get;
 
   const getter = (proto, prop, value) =&gt; {
     try {
@@ -168,12 +173,54 @@
     }
   };
 
+  // After a real blur, the browser fires focus/focusin again when the user comes back.
+  // Hide those too, including the focus restored to the element that was active before.
+  let returning = startedHidden;
+  let returnTimer = 0;
+  const finishReturning = () =&gt; {
+    clearTimeout(returnTimer);
+    returnTimer = setTimeout(() =&gt; {
+      returning = false;
+    }, 500);
+  };
+  const clearReturning = () =&gt; {
+    returning = false;
+    clearTimeout(returnTimer);
+  };
+
   const stop = (e) =&gt; {
-    if (isPageLevel(e.target) || windowLostFocus()) e.stopImmediatePropagation();
+    if (isPageLevel(e.target) || windowLostFocus()) {
+      clearTimeout(returnTimer);
+      returning = true;
+      e.stopImmediatePropagation();
+    }
   };
   for (const type of ['blur', 'focusout']) window.addEventListener(type, stop, true);
 
-  const stopVisibility = (e) =&gt; e.stopImmediatePropagation();
+  const stopFocus = (e) =&gt; {
+    if (!returning) return;
+    finishReturning();
+    e.stopImmediatePropagation();
+  };
+  for (const type of ['focus', 'focusin']) window.addEventListener(type, stopFocus, true);
+
+  // A real click or key press ends the &quot;just came back&quot; window, so focusing a field still works.
+  for (const type of ['pointerdown', 'mousedown', 'keydown', 'touchstart']) {
+    window.addEventListener(type, clearReturning, true);
+  }
+
+  const stopVisibility = (e) =&gt; {
+    try {
+      // The native getter still knows the truth even though document.hidden is overridden.
+      if (nativeHidden?.call(document)) {
+        clearTimeout(returnTimer);
+        returning = true;
+      }
+    } catch {
+      /* ignore */
+    }
+    e.stopImmediatePropagation();
+  };
   for (const type of ['visibilitychange', 'webkitvisibilitychange']) window.addEventListener(type, stopVisibility, true);
 
   const stopLeave = (e) =&gt; {
@@ -191,7 +238,7 @@
       /* ignore */
     }
   };
-  for (const prop of ['onblur', 'onfocusout', 'onvisibilitychange', 'onmouseleave', 'onmouseout']) {
+  for (const prop of ['onblur', 'onfocusout', 'onfocus', 'onfocusin', 'onvisibilitychange', 'onmouseleave', 'onmouseout']) {
     muteHandler(window, prop);
     muteHandler(document, prop);
   }

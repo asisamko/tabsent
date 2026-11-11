@@ -69,15 +69,16 @@ the list in the popup.
 | Reliability | good | best | best (reloads the page once) | good |
 
 The bookmarklet and the console run only after the page has loaded. They hide everything except
-`blur` listeners the page had already added with `addEventListener` before that. If a page still
-notices that you left, use the userscript.
+`blur`/`focus` listeners the page had already added with `addEventListener` before that. If a page
+still notices that you left, use the userscript.
 
 ## What it does
 
 - `document.hidden` is always `false`, `document.visibilityState` is always `"visible"`,
   `document.hasFocus()` always returns `true`.
-- The page gets no `blur` or `visibilitychange` events when you leave the window or tab;
-  `onblur` and `onvisibilitychange` handlers don't fire either.
+- The page gets no `blur` or `visibilitychange` events when you leave the window or tab, and no
+  `focus` / `focusin` events when you come back; `onblur`, `onfocus` and `onvisibilitychange`
+  handlers don't fire either.
 - It gets no `mouseleave` / `mouseout` when the mouse leaves the page.
 - Moving focus between fields on the page itself still works normally.
 
